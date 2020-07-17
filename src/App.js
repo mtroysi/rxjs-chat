@@ -13,10 +13,22 @@ let observable = new Observable(subscriber => {
   });
 })
 
+// Observable pour la validation du username
+let usernameObservable = new Observable(subscriber => {
+  socket.on('new-user', (response) => {
+    if (response.ok) {
+     subscriber.next(response)
+    } else {
+      subscriber.error('Username already taken')
+    }
+  });
+})
+
 const App = () => {
   const [username, setUsername] = useState('')
   const [messages, setMessages] = useState([])
   const [text, setText] = useState('')
+  const [error, setError] = useState('')
   const textInput = useRef(null);
   const usernameInput = useRef(null);
 
@@ -52,10 +64,18 @@ const App = () => {
         pluck('target', 'value'),
       ).subscribe(value => {
         socket.emit('new-user', { username: value });
-        setUsername(value)
       })
       return () => usernameSubscription.unsubscribe();
     }
+  })
+
+  useEffect(() => {
+    let subscription = usernameObservable.subscribe({
+      next(response) { setUsername(response.username) },
+      error(errorMsg) { setError(errorMsg) }
+    })
+
+    return () => subscription.unsubscribe()
   })
 
   return (
@@ -65,6 +85,7 @@ const App = () => {
         <h1>Choose a username</h1>
         <input id="username-input" type="text" placeholder="Type your username here" ref={usernameInput} />
       </div>}
+      {!username && error && <p>{error}</p>}
 
       {username &&
       <div className="chatbox">
