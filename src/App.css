@@ -3,12 +3,8 @@
   width: 75%;
 }
 
-#myForm {
+#text-input {
   bottom: 2em;
   position: absolute; 
-  width: 75%;
-}
-
-#myForm input {
   width: 50%;
 }

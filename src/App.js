@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Observable, fromEvent } from 'rxjs'
 import { filter, pluck } from "rxjs/operators";
 import * as io from 'socket.io-client';
@@ -13,12 +13,26 @@ let observable = new Observable(subscriber => {
   });
 })
 
+// Observable pour la validation du username
+let usernameObservable = new Observable(subscriber => {
+  socket.on('new-user', (response) => {
+    if (response.ok) {
+     subscriber.next(response)
+    } else {
+      subscriber.error('Username already taken')
+    }
+  });
+})
+
 const App = () => {
-  const [messages, setMessages] = useState([]);
+  const [username, setUsername] = useState('')
+  const [messages, setMessages] = useState([])
   const [text, setText] = useState('')
+  const [error, setError] = useState('')
+  const textInput = useRef(null);
+  const usernameInput = useRef(null);
 
   const handleChange = e => setText(e.target.value)
-  const handleSubmit = e => e.preventDefault()
 
   useEffect(() => {
     let subscription = observable.subscribe(message => setMessages([...messages, message]))
@@ -27,29 +41,58 @@ const App = () => {
   })
 
   useEffect(() => {
-    // Observable pour l'envoi des messages au serveur via la touche Entrée (ne fonctionne pas en dehors du useEffect, #text-input pas initialisé ?)
-    let inputObservable = fromEvent(document.getElementById("text-input"), 'keyup').pipe(
-      filter(e => e.keyCode === 13),
-      pluck('target', 'value'),
-    )
+    // Envoi des messages au serveur via la touche Entrée (ne fonctionne pas en dehors du useEffect, #text-input pas initialisé ?)
+    if (document.getElementById("text-input")) {
+      textInput.current.focus()
+      let inputSubscription = fromEvent(document.getElementById("text-input"), 'keyup').pipe(
+        filter(e => e.keyCode === 13),
+        pluck('target', 'value'),
+      ).subscribe(value => {
+        socket.emit('new-message', { author: username, content: value });
+        setText('')
+      })
+      return () => inputSubscription.unsubscribe();
+    }
+  })
 
-    let inputSubscription = inputObservable.subscribe(value => {
-      socket.emit('new-message', { author: 'Morgane', content: value });
-      setText('')
+  useEffect(() => {
+    // Envoi du username au serveur via la touche Entrée
+    if (document.getElementById("username-input")) {
+      usernameInput.current.focus()
+      let usernameSubscription = fromEvent(document.getElementById("username-input"), 'keyup').pipe(
+        filter(e => e.keyCode === 13),
+        pluck('target', 'value'),
+      ).subscribe(value => {
+        socket.emit('new-user', { username: value });
+      })
+      return () => usernameSubscription.unsubscribe();
+    }
+  })
+
+  useEffect(() => {
+    let subscription = usernameObservable.subscribe({
+      next(response) { setUsername(response.username) },
+      error(errorMsg) { setError(errorMsg) }
     })
 
-    return () => inputSubscription.unsubscribe();
+    return () => subscription.unsubscribe()
   })
 
   return (
     <div className="App">
-      <div className="chatbox">
-        {messages.map(message => <div>{`${message.author} > ${message.content}`}</div>)}
+      {!username && 
+      <div>
+        <h1>Choose a username</h1>
+        <input id="username-input" type="text" placeholder="Type your username here" ref={usernameInput} />
+      </div>}
+      {!username && error && <p>{error}</p>}
 
-        <form id="myForm" onSubmit={handleSubmit}>
-          <input id="text-input" type="text" placeholder="Type your text here" value={text} onChange={handleChange} />
-        </form>
-      </div>
+      {username &&
+      <div className="chatbox">
+        <h1>Welcome in RxJS-chat !</h1>
+        {messages.map(message => <div>{`${message.author} > ${message.content}`}</div>)}
+        <input id="text-input" type="text" placeholder="Type your text here" value={text} ref={textInput} onChange={handleChange} />
+      </div>}
     </div>
   );
 }
