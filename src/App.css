@@ -1,3 +1,31 @@
+.header {
+  background-color: #5155f9;
+  color: white;
+  padding: .2em 2em;
+  text-align: center;
+}
+
+h2 {
+  text-decoration: underline;
+  text-decoration-color: #f00b51;
+}
+
+.username-container {
+  text-align: center;
+}
+
+.info {
+  color: gray;
+  padding-left: .5em;
+  padding-top: .25em;
+  position: absolute;
+}
+
+.error {
+  color: red;
+  text-align: center;
+}
+
 .chatbox {
   margin: 2em 5em 5em 2em;
   width: 75%;

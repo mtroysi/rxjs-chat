@@ -80,16 +80,19 @@ const App = () => {
 
   return (
     <div className="App">
+      <div className="header"><h1>Welcome to RxJS-chat !</h1></div>
       {!username && 
-      <div>
-        <h1>Choose a username</h1>
-        <input id="username-input" type="text" placeholder="Type your username here" ref={usernameInput} />
+      <div class="username-container">
+        <h2>Choose a username</h2>
+        <div>
+          <input id="username-input" type="text" placeholder="Type your username here" ref={usernameInput} />
+          <span class="info">Press Enter to confirm</span>
+        </div>
       </div>}
-      {!username && error && <p>{error}</p>}
+      {!username && error && <p class="error">{error}</p>}
 
       {username &&
       <div className="chatbox">
-        <h1>Welcome in RxJS-chat !</h1>
         {messages.map(message => <div>{`${message.author} > ${message.content}`}</div>)}
         <input id="text-input" type="text" placeholder="Type your text here" value={text} ref={textInput} onChange={handleChange} />
       </div>}
