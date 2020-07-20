@@ -19,7 +19,7 @@ let usernameObservable = new Observable(subscriber => {
     if (response.ok) {
      subscriber.next(response)
     } else {
-      subscriber.error('Username already taken')
+      subscriber.error('This username is already taken.')
     }
   });
 })
@@ -93,8 +93,17 @@ const App = () => {
 
       {username &&
       <div className="chatbox">
-        {messages.map(message => <div>{`${message.author} > ${message.content}`}</div>)}
-        <input id="text-input" type="text" placeholder="Type your text here" value={text} ref={textInput} onChange={handleChange} />
+        <div class="messages-container">
+          {messages.map(message =>
+          <div class="message-container">
+            <div class="message">{`${message.content}`}</div>
+            <div class="author">{`${message.author}`}</div>
+          </div>)}
+        </div>
+        <div class="text-container">
+          <input id="text-input" type="text" placeholder="Type your text here" value={text} ref={textInput} onChange={handleChange} />
+          <span class="info">Press Enter to send your message</span>
+        </div>
       </div>}
     </div>
   );
