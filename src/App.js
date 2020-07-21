@@ -9,7 +9,7 @@ const socket = io('http://localhost:8080');
 // Observable pour la réception des messages envoyés par le serveur
 let observable = new Observable(subscriber => {
   socket.on('new-message', (message) => {
-    subscriber.next(message);
+    subscriber.next(message)
   });
 })
 
@@ -24,13 +24,20 @@ let usernameObservable = new Observable(subscriber => {
   });
 })
 
+const getHeureMinutes = () => {
+  const date = new Date()
+  const hour = date.getHours().toString().padStart(2, "0")
+  const minutes = date.getMinutes().toString().padStart(2, "0")
+  return `${hour}h${minutes}`
+}
+
 const App = () => {
   const [username, setUsername] = useState('')
   const [messages, setMessages] = useState([])
   const [text, setText] = useState('')
   const [error, setError] = useState('')
-  const textInput = useRef(null);
-  const usernameInput = useRef(null);
+  const textInput = useRef(null)
+  const usernameInput = useRef(null)
 
   const handleChange = e => setText(e.target.value)
 
@@ -51,7 +58,7 @@ const App = () => {
         socket.emit('new-message', { author: username, content: value });
         setText('')
       })
-      return () => inputSubscription.unsubscribe();
+      return () => inputSubscription.unsubscribe()
     }
   })
 
@@ -65,7 +72,7 @@ const App = () => {
       ).subscribe(value => {
         socket.emit('new-user', { username: value });
       })
-      return () => usernameSubscription.unsubscribe();
+      return () => usernameSubscription.unsubscribe()
     }
   })
 
@@ -82,27 +89,27 @@ const App = () => {
     <div className="App">
       <div className="header"><h1>Welcome to RxJS-chat !</h1></div>
       {!username && 
-      <div class="username-container">
+      <div className="username-container">
         <h2>Choose a username</h2>
         <div>
           <input id="username-input" type="text" placeholder="Type your username here" ref={usernameInput} />
-          <span class="info">Press Enter to confirm</span>
+          <span className="info">Press Enter to confirm</span>
         </div>
       </div>}
-      {!username && error && <p class="error">{error}</p>}
+      {!username && error && <p className="error">{error}</p>}
 
       {username &&
       <div className="chatbox">
-        <div class="messages-container">
-          {messages.map(message =>
-          <div class="message-container">
-            <div class="message">{`${message.content}`}</div>
-            <div class="author">{`${message.author}`}</div>
+        <div className="messages-container">
+          {messages.map((message, index) =>
+          <div className="message-container" key={`${username}_${index}`}>
+            <div className="message">{`${message.content}`}</div>
+            <div className="author">{`${message.author} · ${getHeureMinutes()}`}</div>
           </div>)}
         </div>
-        <div class="text-container">
+        <div className="text-container">
           <input id="text-input" type="text" placeholder="Type your text here" value={text} ref={textInput} onChange={handleChange} />
-          <span class="info">Press Enter to send your message</span>
+          <span className="info">Press Enter to send your message</span>
         </div>
       </div>}
     </div>
