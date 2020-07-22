@@ -1,16 +1,16 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react'
 import { Observable, fromEvent } from 'rxjs'
-import { filter, pluck } from "rxjs/operators";
-import * as io from 'socket.io-client';
-import './App.css';
+import { filter, pluck } from "rxjs/operators"
+import * as io from 'socket.io-client'
+import './App.css'
 
-const socket = io('http://localhost:8080');
+const socket = io('http://localhost:8080')
 
 // Observable pour la réception des messages envoyés par le serveur
 let observable = new Observable(subscriber => {
   socket.on('new-message', (message) => {
     subscriber.next(message)
-  });
+  })
 })
 
 // Observable pour la validation du username
@@ -21,7 +21,7 @@ let usernameObservable = new Observable(subscriber => {
     } else {
       subscriber.error('This username is already taken.')
     }
-  });
+  })
 })
 
 const getHeureMinutes = () => {
@@ -49,32 +49,32 @@ const App = () => {
 
   useEffect(() => {
     // Envoi des messages au serveur via la touche Entrée (ne fonctionne pas en dehors du useEffect, #text-input pas initialisé ?)
-    if (document.getElementById("text-input")) {
+    if (textInput.current) {
       textInput.current.focus()
       let inputSubscription = fromEvent(document.getElementById("text-input"), 'keyup').pipe(
         filter(e => e.keyCode === 13),
         pluck('target', 'value'),
       ).subscribe(value => {
-        socket.emit('new-message', { author: username, content: value });
+        socket.emit('new-message', { author: username, content: value })
         setText('')
       })
       return () => inputSubscription.unsubscribe()
     }
-  })
+  }, [textInput, username])
 
   useEffect(() => {
     // Envoi du username au serveur via la touche Entrée
-    if (document.getElementById("username-input")) {
+    if (usernameInput.current) {
       usernameInput.current.focus()
       let usernameSubscription = fromEvent(document.getElementById("username-input"), 'keyup').pipe(
         filter(e => e.keyCode === 13),
         pluck('target', 'value'),
       ).subscribe(value => {
-        socket.emit('new-user', { username: value });
+        socket.emit('new-user', { username: value })
       })
       return () => usernameSubscription.unsubscribe()
     }
-  })
+  }, [usernameInput])
 
   useEffect(() => {
     let subscription = usernameObservable.subscribe({
@@ -113,7 +113,7 @@ const App = () => {
         </div>
       </div>}
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
