@@ -1,23 +1,23 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { Observable, fromEvent } from 'rxjs'
-import { filter, pluck } from "rxjs/operators"
+import { filter, pluck } from 'rxjs/operators'
 import * as io from 'socket.io-client'
 import './App.css'
 
 const socket = io('http://localhost:8080')
 
 // Observable pour la réception des messages envoyés par le serveur
-let observable = new Observable(subscriber => {
+const observable = new Observable(subscriber => {
   socket.on('new-message', (message) => {
     subscriber.next(message)
   })
 })
 
 // Observable pour la validation du username
-let usernameObservable = new Observable(subscriber => {
+const usernameObservable = new Observable(subscriber => {
   socket.on('new-user', (response) => {
     if (response.ok) {
-     subscriber.next(response)
+      subscriber.next(response)
     } else {
       subscriber.error('This username is already taken.')
     }
@@ -26,8 +26,8 @@ let usernameObservable = new Observable(subscriber => {
 
 const getHeureMinutes = () => {
   const date = new Date()
-  const hour = date.getHours().toString().padStart(2, "0")
-  const minutes = date.getMinutes().toString().padStart(2, "0")
+  const hour = date.getHours().toString().padStart(2, '0')
+  const minutes = date.getMinutes().toString().padStart(2, '0')
   return `${hour}h${minutes}`
 }
 
@@ -42,7 +42,7 @@ const App = () => {
   const handleChange = e => setText(e.target.value)
 
   useEffect(() => {
-    let subscription = observable.subscribe(message => setMessages([...messages, message]))
+    const subscription = observable.subscribe(message => setMessages([...messages, message]))
 
     return () => subscription.unsubscribe()
   })
@@ -51,7 +51,7 @@ const App = () => {
     // Envoi des messages au serveur via la touche Entrée (ne fonctionne pas en dehors du useEffect, #text-input pas initialisé ?)
     if (textInput.current) {
       textInput.current.focus()
-      let inputSubscription = fromEvent(document.getElementById("text-input"), 'keyup').pipe(
+      const inputSubscription = fromEvent(document.getElementById('text-input'), 'keyup').pipe(
         filter(e => e.keyCode === 13),
         pluck('target', 'value'),
       ).subscribe(value => {
@@ -66,7 +66,7 @@ const App = () => {
     // Envoi du username au serveur via la touche Entrée
     if (usernameInput.current) {
       usernameInput.current.focus()
-      let usernameSubscription = fromEvent(document.getElementById("username-input"), 'keyup').pipe(
+      const usernameSubscription = fromEvent(document.getElementById('username-input'), 'keyup').pipe(
         filter(e => e.keyCode === 13),
         pluck('target', 'value'),
       ).subscribe(value => {
@@ -77,9 +77,9 @@ const App = () => {
   }, [usernameInput])
 
   useEffect(() => {
-    let subscription = usernameObservable.subscribe({
-      next(response) { setUsername(response.username) },
-      error(errorMsg) { setError(errorMsg) }
+    const subscription = usernameObservable.subscribe({
+      next (response) { setUsername(response.username) },
+      error (errorMsg) { setError(errorMsg) }
     })
 
     return () => subscription.unsubscribe()
@@ -88,7 +88,7 @@ const App = () => {
   return (
     <div className="App">
       <div className="header"><h1>Welcome to RxJS-chat !</h1></div>
-      {!username && 
+      {!username &&
       <div className="username-container">
         <h2>Choose a username</h2>
         <div>
@@ -102,10 +102,10 @@ const App = () => {
       <div className="chatbox">
         <div className="messages-container">
           {messages.map((message, index) =>
-          <div className="message-container" key={`${username}_${index}`}>
-            <div className="message">{`${message.content}`}</div>
-            <div className="author">{`${message.author} · ${getHeureMinutes()}`}</div>
-          </div>)}
+            <div className="message-container" key={`${username}_${index}`}>
+              <div className="message">{`${message.content}`}</div>
+              <div className="author">{`${message.author} · ${getHeureMinutes()}`}</div>
+            </div>)}
         </div>
         <div className="text-container">
           <input id="text-input" type="text" placeholder="Type your text here" value={text} ref={textInput} onChange={handleChange} />
