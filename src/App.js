@@ -51,7 +51,7 @@ const App = () => {
     // Envoi des messages au serveur via la touche Entrée (ne fonctionne pas en dehors du useEffect, #text-input pas initialisé ?)
     if (textInput.current) {
       textInput.current.focus()
-      const inputSubscription = fromEvent(document.getElementById('text-input'), 'keyup').pipe(
+      const inputSubscription = fromEvent(textInput.current, 'keyup').pipe(
         filter(e => e.keyCode === 13),
         pluck('target', 'value'),
       ).subscribe(value => {
@@ -60,13 +60,13 @@ const App = () => {
       })
       return () => inputSubscription.unsubscribe()
     }
-  }, [textInput, username])
+  })
 
   useEffect(() => {
     // Envoi du username au serveur via la touche Entrée
     if (usernameInput.current) {
       usernameInput.current.focus()
-      const usernameSubscription = fromEvent(document.getElementById('username-input'), 'keyup').pipe(
+      const usernameSubscription = fromEvent(usernameInput.current, 'keyup').pipe(
         filter(e => e.keyCode === 13),
         pluck('target', 'value'),
       ).subscribe(value => {
@@ -74,7 +74,7 @@ const App = () => {
       })
       return () => usernameSubscription.unsubscribe()
     }
-  }, [usernameInput])
+  })
 
   useEffect(() => {
     const subscription = usernameObservable.subscribe({
