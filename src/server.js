@@ -17,10 +17,10 @@ io.on('connection', (socket) => {
   socket.on('new-message', (message) => io.emit('new-message', message))
   socket.on('new-user', (user) => {
     if (users.includes(user.username)) {
-        io.emit('new-user', { ok: false })
+        socket.emit('new-user', { ok: false })
     } else {
         users.push(user.username);
-        io.emit('new-user', { ok: true, username: user.username })
+        socket.emit('new-user', { ok: true, username: user.username })
         console.log(`${user.username} joined the chat.`)
     }
   })
