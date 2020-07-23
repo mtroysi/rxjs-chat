@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { Observable, fromEvent } from 'rxjs'
-import { filter, pluck } from 'rxjs/operators'
+import { distinctUntilChanged, filter, pluck, throttleTime } from 'rxjs/operators'
 import * as io from 'socket.io-client'
 import './App.css'
 
@@ -45,7 +45,7 @@ const App = () => {
     const subscription = observable.subscribe(message => setMessages([...messages, message]))
 
     return () => subscription.unsubscribe()
-  })
+  }, [messages])
 
   useEffect(() => {
     // Envoi des messages au serveur via la touche Entrée (ne fonctionne pas en dehors du useEffect, #text-input pas initialisé ?)
@@ -53,14 +53,17 @@ const App = () => {
       textInput.current.focus()
       const inputSubscription = fromEvent(textInput.current, 'keyup').pipe(
         filter(e => e.keyCode === 13),
+        throttleTime(1000),
         pluck('target', 'value'),
+        distinctUntilChanged(),
+        filter((message) => message.trim().length > 0),
       ).subscribe(value => {
         socket.emit('new-message', { author: username, content: value })
         setText('')
       })
       return () => inputSubscription.unsubscribe()
     }
-  })
+  }, [username])
 
   useEffect(() => {
     // Envoi du username au serveur via la touche Entrée
@@ -74,7 +77,7 @@ const App = () => {
       })
       return () => usernameSubscription.unsubscribe()
     }
-  })
+  }, [])
 
   useEffect(() => {
     const subscription = usernameObservable.subscribe({
@@ -83,7 +86,7 @@ const App = () => {
     })
 
     return () => subscription.unsubscribe()
-  })
+  }, [])
 
   return (
     <div className="App">
