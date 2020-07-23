@@ -58,7 +58,7 @@ const App = () => {
         distinctUntilChanged(),
         filter((message) => message.trim().length > 0),
       ).subscribe(value => {
-        socket.emit('new-message', { author: username, content: value })
+        socket.emit('new-message', { author: username, content: value, time: getHeureMinutes() })
         setText('')
       })
       return () => inputSubscription.unsubscribe()
@@ -107,7 +107,7 @@ const App = () => {
           {messages.map((message, index) =>
             <div className="message-container" key={`${username}_${index}`}>
               <div className="message">{`${message.content}`}</div>
-              <div className="author">{`${message.author} · ${getHeureMinutes()}`}</div>
+              <div className="author">{`${message.author} · ${message.time}`}</div>
             </div>)}
         </div>
         <div className="text-container">
