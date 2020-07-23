@@ -86,7 +86,7 @@ const App = () => {
     })
 
     return () => subscription.unsubscribe()
-  }, [])
+  })
 
   return (
     <div className="App">
