@@ -13,6 +13,13 @@ const observable = new Observable(subscriber => {
   })
 })
 
+const usersObservable = new Observable(subscriber => {
+  socket.on('refresh-users', (users) => {
+    console.log('here')
+    subscriber.next(users)
+  })
+})
+
 // Observable pour la validation du username
 const usernameObservable = new Observable(subscriber => {
   socket.on('new-user', (response) => {
@@ -36,6 +43,7 @@ const App = () => {
   const [messages, setMessages] = useState([])
   const [text, setText] = useState('')
   const [error, setError] = useState('')
+  const [users, setUsers] = useState([])
   const textInput = useRef(null)
   const usernameInput = useRef(null)
 
@@ -46,6 +54,15 @@ const App = () => {
 
     return () => subscription.unsubscribe()
   }, [messages])
+
+  useEffect(() => {
+    const subscription = usersObservable.subscribe(users => {
+      setUsers(users)
+      console.log(users)
+    })
+
+    return () => subscription.unsubscribe()
+  })
 
   useEffect(() => {
     // Envoi des messages au serveur via la touche Entrée (ne fonctionne pas en dehors du useEffect, #text-input pas initialisé ?)
@@ -102,17 +119,23 @@ const App = () => {
       {!username && error && <p className="error">{error}</p>}
 
       {username &&
-      <div className="chatbox">
-        <div className="messages-container">
-          {messages.map((message, index) =>
-            <div className="message-container" key={`${username}_${index}`}>
-              <div className="message">{`${message.content}`}</div>
-              <div className="author">{`${message.author} · ${message.time}`}</div>
-            </div>)}
+      <div className="screen">
+        <div className="users">
+        <h2>{'Who\'s online ?'}</h2>
+          <ul>{users.map(user => <li key={user}>{user}</li>)}</ul>
         </div>
-        <div className="text-container">
-          <input id="text-input" type="text" placeholder="Type your text here" value={text} ref={textInput} onChange={handleChange} />
-          <span className="info">Press Enter to send your message</span>
+        <div className="chatbox">
+          <div className="messages-container">
+            {messages.map((message, index) =>
+              <div className="message-container" key={`${username}_${index}`}>
+                <div className="message">{`${message.content}`}</div>
+                <div className="author">{`${message.author} · ${message.time}`}</div>
+              </div>)}
+          </div>
+          <div className="text-container">
+            <input id="text-input" type="text" placeholder="Type your text here" value={text} ref={textInput} onChange={handleChange} />
+            <span className="info">Press Enter to send your message</span>
+          </div>
         </div>
       </div>}
     </div>
