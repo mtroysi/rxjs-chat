@@ -119,20 +119,23 @@ const App = () => {
       {!username && error && <p className="error">{error}</p>}
 
       {username &&
-      <div className="chatbox">
+      <div className="screen">
         <div className="users">
-          {users.map(user => <div key={user}>{user}</div>)}
+        <h2>{'Who\'s online ?'}</h2>
+          <ul>{users.map(user => <li key={user}>{user}</li>)}</ul>
         </div>
-        <div className="messages-container">
-          {messages.map((message, index) =>
-            <div className="message-container" key={`${username}_${index}`}>
-              <div className="message">{`${message.content}`}</div>
-              <div className="author">{`${message.author} · ${message.time}`}</div>
-            </div>)}
-        </div>
-        <div className="text-container">
-          <input id="text-input" type="text" placeholder="Type your text here" value={text} ref={textInput} onChange={handleChange} />
-          <span className="info">Press Enter to send your message</span>
+        <div className="chatbox">
+          <div className="messages-container">
+            {messages.map((message, index) =>
+              <div className="message-container" key={`${username}_${index}`}>
+                <div className="message">{`${message.content}`}</div>
+                <div className="author">{`${message.author} · ${message.time}`}</div>
+              </div>)}
+          </div>
+          <div className="text-container">
+            <input id="text-input" type="text" placeholder="Type your text here" value={text} ref={textInput} onChange={handleChange} />
+            <span className="info">Press Enter to send your message</span>
+          </div>
         </div>
       </div>}
     </div>

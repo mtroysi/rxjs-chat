@@ -26,18 +26,46 @@ h2 {
   text-align: center;
 }
 
-.chatbox {
+.screen {
+  display: flex;
   margin: 2em 5em 5em 2em;
   width: 75%;
 }
 
+.users {
+  border-right: 2px solid #f00b51;
+  flex-basis: 15%;
+}
+
+.users ul {
+  list-style: none;
+}
+
+.users ul li::before {
+  content: "\2022";
+  color: #0dd298 ;
+  display: inline-block;
+  font-size: x-large;
+  font-weight: bold;
+  margin-left: -1em;
+  vertical-align: middle;
+  width: 1em;
+}
+
+.chatbox {
+  display: flex;
+  flex-basis: 85%;
+  flex-direction: column;
+}
+
 .messages-container {
-  height: calc(750px - 1em);
+  height: 41em;
   overflow: auto;
 }
 
 .message-container {
   margin-bottom: 1em;
+  padding-left: 2em;
 }
 
 .message {
@@ -57,8 +85,8 @@ h2 {
 }
 
 .text-container {
-  bottom: 2em;
-  position: absolute;
+  padding-left: 2em;
+  padding-top: 2em;
   width: 75%;
 }
 
