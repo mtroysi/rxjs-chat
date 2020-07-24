@@ -31,6 +31,7 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     console.log(`${users.get(socket.id)} left the chat.`);
     users.delete(socket.id);
+    io.emit('refresh-users', Array.from(users.values()))
 });
 })
 
