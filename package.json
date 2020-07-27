@@ -21,7 +21,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "lint": "eslint .  --ext .js"
+    "lint": "eslint .  --ext .js",
+    "ngrok": "ngrok start --all --config ./ngrok.yaml"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -37,5 +38,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "ngrok": "^3.2.7"
   }
 }

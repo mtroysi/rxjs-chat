@@ -1,0 +1,5 @@
+region: eu
+tunnels:
+  rxjs-chat:
+    proto: http
+    addr: 8080

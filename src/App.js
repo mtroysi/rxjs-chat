@@ -4,7 +4,7 @@ import { distinctUntilChanged, filter, pluck, throttleTime } from 'rxjs/operator
 import * as io from 'socket.io-client'
 import './App.css'
 
-const socket = io('http://localhost:8080')
+const socket = io('http://localhost:8080') // replce this url by the ngrok url if you want to join existing chat
 
 // Observable pour la réception des messages envoyés par le serveur
 const observable = new Observable(subscriber => {
