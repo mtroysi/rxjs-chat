@@ -4,7 +4,7 @@ import { distinctUntilChanged, filter, pluck, throttleTime } from 'rxjs/operator
 import * as io from 'socket.io-client'
 import './App.css'
 
-const socket = io('http://localhost:8080') // replce this url by the ngrok url if you want to join existing chat
+const socket = io('http://localhost:8080') // replace this url by the ngrok url if you want to join existing chat
 
 // Observable pour la réception des messages envoyés par le serveur
 const observable = new Observable(subscriber => {
@@ -15,7 +15,6 @@ const observable = new Observable(subscriber => {
 
 const usersObservable = new Observable(subscriber => {
   socket.on('refresh-users', (users) => {
-    console.log('here')
     subscriber.next(users)
   })
 })
@@ -51,6 +50,8 @@ const App = () => {
 
   useEffect(() => {
     const subscription = observable.subscribe(message => setMessages([...messages, message]))
+    const container = document.getElementById('messages-container')
+    if (container) container.scrollTop = container.scrollHeight
 
     return () => subscription.unsubscribe()
   }, [messages])
@@ -58,7 +59,6 @@ const App = () => {
   useEffect(() => {
     const subscription = usersObservable.subscribe(users => {
       setUsers(users)
-      console.log(users)
     })
 
     return () => subscription.unsubscribe()
@@ -125,7 +125,7 @@ const App = () => {
           <ul>{users.map(user => <li key={user}>{user}</li>)}</ul>
         </div>
         <div className="chatbox">
-          <div className="messages-container">
+          <div id="messages-container" className="messages-container">
             {messages.map((message, index) =>
               <div className="message-container" key={`${username}_${index}`}>
                 <div className="message">{`${message.content}`}</div>
