@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import './Message.css'
 
 const Message = ({ author, content, key, time }) => {
@@ -11,3 +12,10 @@ const Message = ({ author, content, key, time }) => {
 }
 
 export default Message
+
+Message.propTypes = {
+  author: PropTypes.string,
+  content: PropTypes.string,
+  key: PropTypes.string,
+  time: PropTypes.string
+}

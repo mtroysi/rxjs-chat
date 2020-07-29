@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react'
+import PropTypes from 'prop-types'
 import { fromEvent } from 'rxjs'
 import { filter, pluck } from 'rxjs/operators'
 import { SOCKET } from './constants'
@@ -36,3 +37,7 @@ const Username = ({ error }) => {
 }
 
 export default Username
+
+Username.propTypes = {
+  error: PropTypes.string
+}

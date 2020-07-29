@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import './Users.css'
 
 const Users = ({ users }) => {
@@ -11,3 +12,7 @@ const Users = ({ users }) => {
 }
 
 export default Users
+
+Users.propTypes = {
+  users: PropTypes.array
+}
