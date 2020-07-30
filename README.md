@@ -8,7 +8,7 @@ Please be aware that the structure of the project is not yet optimized, this is 
 
 If you want to chat with other people and make your local server accessible, run the following command :  
 `yarn run ngrok`  
-and replace the url in `src/App.js` by the ngrok url
+and give the generated url to the users who will put it in `src/constants.js` instead of `localhost` in `SOCKET`
 
 ## Start the client
 `yarn start`
