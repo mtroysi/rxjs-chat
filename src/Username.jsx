@@ -1,34 +1,27 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
-import { fromEvent } from 'rxjs'
-import { filter, pluck } from 'rxjs/operators'
 import { SOCKET } from './constants'
 import './Username.css'
 
 const Username = ({ error }) => {
+  const [username, setUsername] = useState('')
 
-  const usernameInput = useRef(null)
+  const handleChange = e => setUsername(e.target.value)
 
-  useEffect(() => {
-    if (usernameInput.current) {
-      usernameInput.current.focus()
-      const usernameSubscription = fromEvent(usernameInput.current, 'keyup').pipe(
-        filter(e => e.keyCode === 13),
-        pluck('target', 'value'),
-      ).subscribe(value => {
-        SOCKET.emit('new-user', { username: value })
-      })
-      return () => usernameSubscription.unsubscribe()
-    }
-  }, [])
+  const handleSubmit = e => {
+    e.preventDefault()
+    SOCKET.emit('new-user', { username: username })
+  }
 
   return (
     <React.Fragment>
       <div className="username-container">
         <h2>Choose a username</h2>
         <div>
-          <input id="username-input" type="text" placeholder="Type your username here" ref={usernameInput} />
-          <span className="info">Press Enter to confirm</span>
+          <form id="myForm" onSubmit={handleSubmit}>
+            <input id="username-input" type="text" value={username} placeholder="Type your username here" onChange={handleChange} />
+            <button type="submit">Send</button>
+          </form>
         </div>
       </div>
       {error && <p className="error">{error}</p>}

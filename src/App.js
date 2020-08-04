@@ -1,6 +1,5 @@
-import React, { useEffect, useState, useRef } from 'react'
-import { Observable, fromEvent } from 'rxjs'
-import { distinctUntilChanged, filter, pluck, throttleTime } from 'rxjs/operators'
+import React, { useEffect, useState } from 'react'
+import { Observable } from 'rxjs'
 import { getHeureMinutes } from './helpers'
 import { SOCKET } from './constants'
 import Messages from './Messages'
@@ -37,9 +36,14 @@ const App = () => {
   const [text, setText] = useState('')
   const [error, setError] = useState('')
   const [users, setUsers] = useState([])
-  const textInput = useRef(null)
 
   const handleChange = e => setText(e.target.value)
+
+  const handleSubmit = e => {
+    e.preventDefault()
+    SOCKET.emit('new-message', { author: username, content: text, time: getHeureMinutes() });
+    setText('')
+  }
 
   useEffect(() => {
     const subscription = observable.subscribe(message => setMessages([...messages, message]))
@@ -54,23 +58,6 @@ const App = () => {
 
     return () => subscription.unsubscribe()
   })
-
-  useEffect(() => {
-    if (textInput.current) {
-      textInput.current.focus()
-      const inputSubscription = fromEvent(textInput.current, 'keyup').pipe(
-        filter(e => e.keyCode === 13),
-        throttleTime(1000),
-        pluck('target', 'value'),
-        distinctUntilChanged(),
-        filter((message) => message.trim().length > 0),
-      ).subscribe(value => {
-        SOCKET.emit('new-message', { author: username, content: value, time: getHeureMinutes() })
-        setText('')
-      })
-      return () => inputSubscription.unsubscribe()
-    }
-  }, [username])
 
   useEffect(() => {
     const subscription = usernameObservable.subscribe({
@@ -92,8 +79,10 @@ const App = () => {
         <div className="chatbox">
           <Messages messages={messages} username={username} />
           <div className="text-container">
-            <input id="text-input" type="text" placeholder="Type your text here" value={text} ref={textInput} onChange={handleChange} />
-            <span className="info">Press Enter to send your message</span>
+            <form id="myForm" onSubmit={handleSubmit}>
+              <input id="text-input" type="text" placeholder="Type your text here" value={text} onChange={handleChange} />
+              <button type="submit">Send</button>
+            </form>
           </div>
         </div>
       </div>}
