@@ -8,27 +8,11 @@ import Users from './Users'
 import './App.css'
 
 
-const observable = new Observable(subscriber => {
-  SOCKET.on('new-message', (message) => {
-    subscriber.next(message)
-  })
-})
+const messagesObservable = {}
 
-const usersObservable = new Observable(subscriber => {
-  SOCKET.on('refresh-users', (users) => {
-    subscriber.next(users)
-  })
-})
+const usersObservable = {}
 
-const usernameObservable = new Observable(subscriber => {
-  SOCKET.on('new-user', (response) => {
-    if (response.ok) {
-      subscriber.next(response)
-    } else {
-      subscriber.error('This username is already taken.')
-    }
-  })
-})
+const usernameObservable = {}
 
 const App = () => {
   const [username, setUsername] = useState('')
@@ -46,26 +30,18 @@ const App = () => {
   }
 
   useEffect(() => {
-    const subscription = observable.subscribe(message => setMessages([...messages, message]))
-
-    return () => subscription.unsubscribe()
-  }, [messages])
-
-  useEffect(() => {
-    const subscription = usersObservable.subscribe(users => {
-      setUsers(users)
-    })
-
-    return () => subscription.unsubscribe()
+    // subscribe to messages
+    // and don't forget to unsubscribe !
   })
 
   useEffect(() => {
-    const subscription = usernameObservable.subscribe({
-      next (response) { setUsername(response.username) },
-      error (errorMsg) { setError(errorMsg) }
-    })
+    // subscribe to users
+    // and don't forget to unsubscribe !
+  })
 
-    return () => subscription.unsubscribe()
+  useEffect(() => {
+    // subscribe to username
+    // and don't forget to unsubscribe !
   })
 
   return (
